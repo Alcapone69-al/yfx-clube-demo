@@ -48,6 +48,7 @@ body{
   font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;
   -webkit-tap-highlight-color:transparent;min-height:100vh;min-height:100dvh;
   overflow-wrap:anywhere;
+  padding-top:env(safe-area-inset-top,0px);
 }
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--ink);z-index:40}
 img{max-width:100%}
@@ -73,7 +74,7 @@ ol,ul{list-style:none;margin:0;padding:0}
 
 /* ---- estrutura ---- */
 .body{max-width:1280px;margin:0 auto}
-main{padding-block:18px calc(var(--nav-h) + 28px + max(2px,calc(env(safe-area-inset-bottom,0px) - 14px)));padding-left:var(--gl);padding-right:var(--gr);min-width:0;outline:none}
+main{padding-block:18px calc(var(--nav-h) + 48px + max(2px,calc(env(safe-area-inset-bottom,0px) - 14px)));padding-left:var(--gl);padding-right:var(--gr);min-width:0;outline:none}
 .view{display:flex;flex-direction:column;gap:16px;max-width:640px;margin-inline:auto}
 .view>*{min-width:0}
 @keyframes vin{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
