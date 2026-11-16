@@ -177,6 +177,20 @@ h3{font-size:14px;font-weight:700}
 .alert p{margin:0;font-size:13px;color:var(--muted);line-height:1.45}
 .mini{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}
 
+
+/* ---- modo gulera ---- */
+.gulera{margin-top:14px;background:var(--orange-dim);border:1px solid rgba(240,118,30,.35);border-radius:12px;padding:12px 14px}
+.gulera-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.gulera-head svg,.gulera-pill svg{width:18px;height:18px;stroke:var(--orange);fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.gulera-head b{font-family:var(--display);font-weight:800;font-size:16px;color:var(--orange)}
+.gulera-state{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#140A02;background:var(--orange);border-radius:4px;padding:2px 6px}
+.gulera-tol{display:flex;align-items:center;gap:10px;margin:8px 0 0;font-size:13px}
+.pips{display:inline-flex;gap:5px;flex:none}
+.pips i{width:12px;height:12px;border-radius:50%;border:2px solid var(--orange);display:block}
+.pips i.used{background:var(--orange)}
+.gulera .note{margin:8px 0 0}
+.gulera-pill{display:inline-flex;align-items:center;gap:6px;margin-top:8px;font-size:12px;font-weight:700;color:var(--orange);background:var(--orange-dim);border:1px solid rgba(240,118,30,.35);border-radius:999px;padding:4px 10px 4px 8px}
+
 /* ---- navegação: barra inferior (telemóvel e tablet) ---- */
 .nav{position:fixed;left:0;right:0;bottom:0;z-index:30;background:rgba(11,11,12,.96);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px);padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px)}
 .nav ul{max-width:640px;margin:0 auto;display:flex}
@@ -354,6 +368,11 @@ h3{font-size:14px;font-weight:700}
         <li class="day"><span class="d">Sáb</span><b aria-hidden="true">&middot;</b><span class="sr">por vir</span></li>
         <li class="day"><span class="d">Dom</span><b aria-hidden="true">&middot;</b><span class="sr">por vir</span></li>
       </ol>
+      <div class="gulera" id="gulera">
+        <div class="gulera-head"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-flame"/></svg><b>Modo Gulera</b><span class="gulera-state">ativo</span></div>
+        <p class="gulera-tol"><span class="pips" aria-hidden="true"><i class="used"></i><i></i></span><span>Tolerância da semana: <strong>1 de 2 faltas</strong> usadas</span></p>
+        <p class="note">Podes faltar até 2 dias por semana sem perder a sequência. À terceira falta, o Modo Gulera desliga. Liga a partir de 7 dias seguidos.</p>
+      </div>
       <button class="btn" id="checkin" type="button">Fazer check-in na Matola</button>
     </div>
 
@@ -504,6 +523,7 @@ h3{font-size:14px;font-weight:700}
         <div>
           <h1 tabindex="-1" style="font-size:20px">Yassin Ibrahimo</h1>
           <p class="note tight">Membro da Matola desde Março · Membro Normal</p>
+          <span class="gulera-pill"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-flame"/></svg>Modo Gulera ativo</span>
         </div>
       </div>
       <div class="stat-grid">
