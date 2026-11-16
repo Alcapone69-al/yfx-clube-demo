@@ -1,5 +1,5 @@
 /* Service worker do Pro Gym Clube. Para publicar uma nova versão, mude VERSAO. */
-const VERSAO = 'v1.1.0';
+const VERSAO = 'v1.2.0';
 const CACHE = 'progym-clube-' + VERSAO;
 const PRE = [
   "./",
