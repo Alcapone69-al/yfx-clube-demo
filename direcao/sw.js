@@ -1,5 +1,5 @@
 /* Service worker do Painel Pro Gym. Para publicar uma nova versão, mude VERSAO. */
-const VERSAO = 'v1.0.0';
+const VERSAO = 'v1.4.0';
 const CACHE = 'progym-direcao-' + VERSAO;
 const PRE = [
   "./",
