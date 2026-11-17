@@ -54,6 +54,29 @@ button{font:inherit;color:inherit}
 .btn:focus-visible,.filters button:focus-visible{outline-offset:-3px}
 .wrap{max-width:1240px;margin:0 auto;padding-left:var(--gl);padding-right:var(--gr)}
 
+
+/* ---- janelas e formulários ---- */
+dialog{background:var(--surface);color:var(--fg);border:1px solid var(--line);border-radius:16px;padding:0;width:calc(100% - 24px);max-width:520px;max-height:calc(100dvh - 24px);overflow:auto}
+dialog::backdrop{background:rgba(0,0,0,.72)}
+.dlg{padding:20px 18px 18px}
+.dlg h2{font-family:var(--display);font-size:20px;font-weight:800;margin:0 0 4px}
+.dlg .sub{margin:0 0 14px}
+.fld{display:block;margin-top:12px}
+.fld>span{display:block;font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.fld input,.fld select,.fld textarea{width:100%;min-height:46px;background:var(--surface-2);color:var(--fg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font:inherit;font-size:16px;color-scheme:dark}
+.fld textarea{min-height:110px;resize:vertical}
+.fld input:focus-visible,.fld select:focus-visible,.fld textarea:focus-visible{outline:2px solid var(--orange);outline-offset:1px}
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:420px){.fgrid{grid-template-columns:1fr}}
+.dlg .err{color:#FF8A7A;font-size:13.5px;margin:12px 0 0;min-height:1em}
+.dlg .demo-note{font-size:12px;color:var(--muted);margin:14px 0 0}
+.dlg .actions{margin-top:16px;display:flex;gap:10px;flex-wrap:wrap}
+.dlg .actions .btn{flex:1 1 140px}
+.msum{font-family:var(--display);font-weight:800;font-size:16px;margin:14px 0 0}
+.note-line{margin:10px 0 0;font-size:13.5px;color:var(--fg)}
+.note-line b{color:var(--orange)}
+#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:70;background:var(--fg);color:#111;font-weight:600;font-size:14px;padding:12px 18px;border-radius:12px;max-width:calc(100% - 32px);box-shadow:0 8px 30px rgba(0,0,0,.5)}
+
 /* ---- barra de topo ---- */
 .top{background:var(--ink);padding-top:env(safe-area-inset-top,0px);border-bottom:1px solid var(--line)}
 .top .wrap{display:flex;align-items:center;gap:12px;padding-block:10px}
@@ -272,13 +295,13 @@ footer{font-size:12.5px;color:var(--muted);text-align:center;padding-block:6px 4
     </div>
     <div class="actions">
       <button class="btn" type="button" id="btn-msg">Enviar mensagem a todos</button>
-      <button class="btn ghost" type="button" aria-disabled="true">Exportar lista</button>
+      <button class="btn ghost" type="button" id="btn-export">Exportar lista</button>
     </div>
   </section>
 
   <!-- unidades + horas -->
   <section class="grid k2">
-    <div class="card" aria-labelledby="t-unid">
+    <div class="card" id="card-unid" aria-labelledby="t-unid">
       <p class="eyebrow">Comparação</p>
       <h2 id="t-unid">Membros ativos por unidade</h2>
       <p class="sub">Percentagem dos membros de cada unidade que treinou esta semana.</p>
@@ -288,7 +311,8 @@ footer{font-size:12.5px;color:var(--muted);text-align:center;padding-block:6px 4
         <div class="brow" data-unit="zimpeto"><span>Zimpeto</span><div class="btrack" aria-hidden="true"><div class="bfill" style="width:67%"></div></div><div class="bval">67%</div></div>
         <div class="brow" data-unit="altomae"><span>Alto Maé</span><div class="btrack" aria-hidden="true"><div class="bfill" style="width:63%"></div></div><div class="bval">63%</div></div>
       </div>
-      <p class="sub gap">Alto Maé está 9 pontos abaixo da Matola. Com 112 membros, cada ponto são cerca de 1 membro por semana.</p>
+      <p class="sub gap" id="unit-note">Alto Maé está 9 pontos abaixo da Matola. Com 112 membros, cada ponto são cerca de 1 membro por semana.</p>
+      <div class="actions"><button class="btn ghost" type="button" id="btn-members">Gerir membros</button></div>
     </div>
 
     <div class="card" aria-labelledby="t-horas">
@@ -341,10 +365,12 @@ footer{font-size:12.5px;color:var(--muted);text-align:center;padding-block:6px 4
         <div class="brow" data-unit="zimpeto"><span>Zimpeto</span><div class="btrack" aria-hidden="true"><div class="bfill" style="width:79%"></div></div><div class="bval">15,8<span class="sr"> pontos</span></div></div>
         <div class="brow" data-unit="altomae"><span>Alto Maé</span><div class="btrack" aria-hidden="true"><div class="bfill" style="width:71%"></div></div><div class="bval">14,2<span class="sr"> pontos</span></div></div>
       </div>
-      <p class="sub gap">Pontos por média de cada membro, para a unidade maior não ganhar só por ser maior. 423 dos 596 membros já pontuaram este mês.</p>
+      <p class="sub gap">Pontos por média de cada membro, para a unidade maior não ganhar só por ser maior. 423 dos <span data-total>596</span> membros já pontuaram este mês.</p>
+      <p class="note-line" id="prize-line" hidden></p>
+      <p class="note-line" id="next-line" hidden></p>
       <div class="actions">
-        <button class="btn ghost" type="button" aria-disabled="true">Definir prémio</button>
-        <button class="btn ghost" type="button" aria-disabled="true">Preparar desafio de Dezembro</button>
+        <button class="btn ghost" type="button" id="btn-prize">Definir prémio</button>
+        <button class="btn ghost" type="button" id="btn-next">Preparar desafio de Dezembro</button>
       </div>
     </div>
 
@@ -371,11 +397,64 @@ footer{font-size:12.5px;color:var(--muted);text-align:center;padding-block:6px 4
 <footer>Demonstração com dados de exemplo. Construído pela YFX.</footer>
 </div>
 
+
+<div id="toast" role="status" aria-live="polite" hidden></div>
+
+<dialog id="dlg-msg" aria-labelledby="dm-title"><form method="dialog" class="dlg" id="f-msg" novalidate>
+  <h2 id="dm-title">Enviar mensagem</h2>
+  <p class="sub" id="dm-to"></p>
+  <label class="fld"><span>Mensagem</span><textarea id="dm-text" rows="4"></textarea></label>
+  <p class="err" id="dm-err" role="alert"></p>
+  <div class="actions"><button class="btn" type="submit" id="dm-send">Enviar</button><button class="btn ghost" type="button" data-close>Cancelar</button></div>
+  <p class="demo-note">Demonstração: nada é guardado nem enviado a membros reais.</p>
+</form></dialog>
+
+<dialog id="dlg-prize" aria-labelledby="dp-title"><form method="dialog" class="dlg" id="f-prize" novalidate>
+  <h2 id="dp-title">Definir prémio</h2>
+  <p class="sub">O prémio da unidade vencedora do desafio de Novembro.</p>
+  <label class="fld"><span>Prémio</span><select id="pr-sel">
+    <option value="m">Mensalidade grátis (1 mês)</option><option value="s">Pack de suplementos</option><option value="t">T-shirt Pro Gym</option><option value="o">Outro (escrever)</option></select></label>
+  <label class="fld" id="pr-txt-w" hidden><span>Descrição do prémio</span><input id="pr-txt" type="text" maxlength="60"></label>
+  <p class="err" id="dp-err" role="alert"></p>
+  <div class="actions"><button class="btn" type="submit">Guardar</button><button class="btn ghost" type="button" data-close>Cancelar</button></div>
+  <p class="demo-note">Demonstração: nada é guardado nem enviado a membros reais.</p>
+</form></dialog>
+
+<dialog id="dlg-next" aria-labelledby="dn-title"><form method="dialog" class="dlg" id="f-next" novalidate>
+  <h2 id="dn-title">Preparar desafio de Dezembro</h2>
+  <p class="sub">Os pontos contam pela média de cada unidade, para a unidade maior não ganhar só por ser maior.</p>
+  <label class="fld"><span>Nome do desafio</span><input id="nx-name" type="text" maxlength="40"></label>
+  <div class="fgrid">
+    <label class="fld"><span>Data de início</span><input id="nx-date" type="date" value="2026-12-01"></label>
+    <label class="fld"><span>Duração</span><select id="nx-dur"><option value="14">14 dias</option><option value="21">21 dias</option><option value="30" selected>30 dias</option></select></label>
+    <label class="fld"><span>Pontos por ida ao ginásio</span><input id="nx-pv" type="number" min="1" max="10" value="3" inputmode="numeric"></label>
+    <label class="fld"><span>Pontos por treino registado</span><input id="nx-pw" type="number" min="1" max="10" value="2" inputmode="numeric"></label>
+  </div>
+  <p class="err" id="dn-err" role="alert"></p>
+  <div class="actions"><button class="btn" type="submit">Guardar</button><button class="btn ghost" type="button" data-close>Cancelar</button></div>
+  <p class="demo-note">Demonstração: nada é guardado nem enviado a membros reais.</p>
+</form></dialog>
+
+<dialog id="dlg-mem" aria-labelledby="dg-title"><form method="dialog" class="dlg" id="f-mem" novalidate>
+  <h2 id="dg-title">Gerir membros</h2>
+  <p class="sub">Atualiza o total de membros de cada unidade. Os indicadores do painel recalculam logo.</p>
+  <div class="fgrid">
+    <label class="fld"><span>Matola</span><input id="mb-matola" type="number" min="0" max="5000" inputmode="numeric"></label>
+    <label class="fld"><span>Marés</span><input id="mb-mares" type="number" min="0" max="5000" inputmode="numeric"></label>
+    <label class="fld"><span>Zimpeto</span><input id="mb-zimpeto" type="number" min="0" max="5000" inputmode="numeric"></label>
+    <label class="fld"><span>Alto Maé</span><input id="mb-altomae" type="number" min="0" max="5000" inputmode="numeric"></label>
+  </div>
+  <p class="msum" id="mb-sum"></p>
+  <p class="err" id="dg-err" role="alert"></p>
+  <div class="actions"><button class="btn" type="submit">Guardar</button><button class="btn ghost" type="button" data-close>Cancelar</button></div>
+  <p class="demo-note">Demonstração: nada é guardado nem enviado a membros reais.</p>
+</form></dialog>
+
 <script>
 /* i18n: PT (origem) <-> EN. Dicionário indexado pelo texto em português. */
 (function(){
   'use strict';
-  var DICT = {"Saltar para o conteúdo": "Skip to content", "Painel": "Dashboard", "Demonstração": "Demo", "Todas": "All", "A mostrar: todas as unidades": "Showing: all units", "Membros ativos esta semana": "Active members this week", "de": "of", "membros": "members", "Em risco de cancelar": "At risk of cancelling", "sem vir há 14 dias ou mais": "not seen for 14+ days", "Receita em risco por mês": "Monthly revenue at risk", "MT · média de 2.600 por membro": "MT · average 2,600 per member", "Participação no desafio": "Challenge participation", "dos membros, em Novembro": "of members, in November", "O que o sistema de cartão não mostra": "What the card system doesn't show", "Quem está a ir embora": "Who is leaving", "No mês passado, 29 dos 38 membros nesta lista cancelaram. Ninguém falou com eles antes.": "Last month, 29 of the 38 members on this list cancelled. Nobody spoke to them beforehand.", "Membro": "Member", "Ausência": "Absence", "Plano": "Plan", "Mensalidade": "Monthly fee", "Normal": "Standard", "Família": "Family", "Estudante": "Student", "Sénior": "Senior", "Enviar mensagem a todos": "Message everyone", "Exportar lista": "Export list", "Comparação": "Comparison", "Membros ativos por unidade": "Active members by unit", "Percentagem dos membros de cada unidade que treinou esta semana.": "Share of each unit's members who trained this week.", "(mais alto)": "(highest)", "Alto Maé está 9 pontos abaixo da Matola. Com 112 membros, cada ponto são cerca de 1 membro por semana.": "Alto Maé is 9 points below Matola. With 112 members, each point is about 1 member per week.", "Segunda a sexta": "Monday to Friday", "Horas de maior afluência": "Peak hours", "Todas as unidades": "All units", "Média de entradas por hora, nas quatro unidades.": "Average entries per hour, across the four units.", "Hora": "Hour", "Entradas": "Entries", "Pico às 18h, com 118 entradas por hora. Das 9h às 15h a casa está a 20% do pico — é aí que o plano de estudante faz sentido.": "Peak at 18:00, with 118 entries per hour. From 09:00 to 15:00 the gym runs at 20% of peak, which is where a student plan makes sense.", "O buraco": "The drop-off", "Quantos ainda treinam, por mês de inscrição": "How many still train, by sign-up month", "De cada grupo que se inscreveu, a percentagem que ainda vem ao ginásio hoje.": "Of each group that signed up, the percentage still coming to the gym today.", "Julho": "July", "Agosto": "August", "Setembro": "September", "Outubro": "October", "Quatro em cada dez membros de Julho já não aparecem. Este é o número que a app existe para mudar, e é o número que medimos daqui a três meses.": "Four in ten of July's members no longer show up. This is the number the app exists to change, and the number we will measure in three months.", "Em curso · faltam 14 dias": "In progress · 14 days left", "Desafio de Novembro": "November challenge", "pontos, líder": "points, leader", "pontos": "points", "Pontos por média de cada membro, para a unidade maior não ganhar só por ser maior. 423 dos 596 membros já pontuaram este mês.": "Points are based on each member's average, so the biggest unit doesn't win just for being big. 423 of 596 members have scored this month.", "Definir prémio": "Set prize", "Preparar desafio de Dezembro": "Set up December challenge", "Este mês": "This month", "O que os membros fizeram por vocês": "What members did for you", "Partilhas com a marca Pro Gym": "Shares with the Pro Gym brand", "stories e publicações": "stories and posts", "Planos feitos por instrutores": "Plans made by instructors", "seguidos por 128 membros": "followed by 128 members", "Cada partilha leva o nome Pro Gym ao Instagram de um membro, sem custo de publicidade.": "Each share puts the Pro Gym name on a member's Instagram at no advertising cost.", "Publicar aviso": "Post notice", "Demonstração com dados de exemplo. Construído pela YFX.": "Demo with sample data. Built by YFX.", "Filtro por unidade": "Filter by unit", "Unidade": "Unit", "Indicadores": "Indicators", "Gráfico de barras das entradas por hora, das 5h às 21h. O valor mais alto é às 18h, com 118 entradas. Os dados completos estão na tabela a seguir.": "Bar chart of entries per hour, from 05:00 to 21:00. The highest value is at 18:00, with 118 entries. The full data is in the table that follows.", "Entradas por hora, segunda a sexta, nas quatro unidades": "Entries per hour, Monday to Friday, across the four units", "todas as unidades": "all units", "{n} dias": "{n} days", "{a} de {b}": "{a} of {b}", ". Horas, retenção e partilhas não têm dados por unidade e continuam a mostrar todas as unidades.": ". Hours, retention and shares have no per-unit data and keep showing all units.", "Mensagem enviada": "Message sent", "Aviso publicado nas 4 unidades": "Notice posted to all 4 units", "Painel Pro Gym · titulo": "Pro Gym Dashboard", "@desc": "Demo of the Pro Gym management dashboard. Sample data.", "A mostrar:": "Showing:"};
+  var DICT = {"Saltar para o conteúdo": "Skip to content", "Painel": "Dashboard", "Demonstração": "Demo", "Todas": "All", "A mostrar: todas as unidades": "Showing: all units", "Membros ativos esta semana": "Active members this week", "de": "of", "membros": "members", "Em risco de cancelar": "At risk of cancelling", "sem vir há 14 dias ou mais": "not seen for 14+ days", "Receita em risco por mês": "Monthly revenue at risk", "MT · média de 2.600 por membro": "MT · average 2,600 per member", "Participação no desafio": "Challenge participation", "dos membros, em Novembro": "of members, in November", "O que o sistema de cartão não mostra": "What the card system doesn't show", "Quem está a ir embora": "Who is leaving", "No mês passado, 29 dos 38 membros nesta lista cancelaram. Ninguém falou com eles antes.": "Last month, 29 of the 38 members on this list cancelled. Nobody spoke to them beforehand.", "Membro": "Member", "Ausência": "Absence", "Plano": "Plan", "Mensalidade": "Monthly fee", "Normal": "Standard", "Família": "Family", "Estudante": "Student", "Sénior": "Senior", "Enviar mensagem a todos": "Message everyone", "Exportar lista": "Export list", "Comparação": "Comparison", "Membros ativos por unidade": "Active members by unit", "Percentagem dos membros de cada unidade que treinou esta semana.": "Share of each unit's members who trained this week.", "(mais alto)": "(highest)", "Segunda a sexta": "Monday to Friday", "Horas de maior afluência": "Peak hours", "Todas as unidades": "All units", "Média de entradas por hora, nas quatro unidades.": "Average entries per hour, across the four units.", "Hora": "Hour", "Entradas": "Entries", "Pico às 18h, com 118 entradas por hora. Das 9h às 15h a casa está a 20% do pico — é aí que o plano de estudante faz sentido.": "Peak at 18:00, with 118 entries per hour. From 09:00 to 15:00 the gym runs at 20% of peak, which is where a student plan makes sense.", "O buraco": "The drop-off", "Quantos ainda treinam, por mês de inscrição": "How many still train, by sign-up month", "De cada grupo que se inscreveu, a percentagem que ainda vem ao ginásio hoje.": "Of each group that signed up, the percentage still coming to the gym today.", "Julho": "July", "Agosto": "August", "Setembro": "September", "Outubro": "October", "Quatro em cada dez membros de Julho já não aparecem. Este é o número que a app existe para mudar, e é o número que medimos daqui a três meses.": "Four in ten of July's members no longer show up. This is the number the app exists to change, and the number we will measure in three months.", "Em curso · faltam 14 dias": "In progress · 14 days left", "Desafio de Novembro": "November challenge", "pontos, líder": "points, leader", "pontos": "points", "Definir prémio": "Set prize", "Preparar desafio de Dezembro": "Set up December challenge", "Este mês": "This month", "O que os membros fizeram por vocês": "What members did for you", "Partilhas com a marca Pro Gym": "Shares with the Pro Gym brand", "stories e publicações": "stories and posts", "Planos feitos por instrutores": "Plans made by instructors", "seguidos por 128 membros": "followed by 128 members", "Cada partilha leva o nome Pro Gym ao Instagram de um membro, sem custo de publicidade.": "Each share puts the Pro Gym name on a member's Instagram at no advertising cost.", "Publicar aviso": "Post notice", "Demonstração com dados de exemplo. Construído pela YFX.": "Demo with sample data. Built by YFX.", "Filtro por unidade": "Filter by unit", "Unidade": "Unit", "Indicadores": "Indicators", "Gráfico de barras das entradas por hora, das 5h às 21h. O valor mais alto é às 18h, com 118 entradas. Os dados completos estão na tabela a seguir.": "Bar chart of entries per hour, from 05:00 to 21:00. The highest value is at 18:00, with 118 entries. The full data is in the table that follows.", "Entradas por hora, segunda a sexta, nas quatro unidades": "Entries per hour, Monday to Friday, across the four units", "todas as unidades": "all units", "{n} dias": "{n} days", "{a} de {b}": "{a} of {b}", ". Horas, retenção e partilhas não têm dados por unidade e continuam a mostrar todas as unidades.": ". Hours, retention and shares have no per-unit data and keep showing all units.", "Mensagem enviada": "Message sent", "Aviso publicado nas 4 unidades": "Notice posted to all 4 units", "Painel Pro Gym · titulo": "Pro Gym Dashboard", "@desc": "Demo of the Pro Gym management dashboard. Sample data.", "A mostrar:": "Showing:", "Pontos por média de cada membro, para a unidade maior não ganhar só por ser maior. 423 dos": "Points are based on each member's average, so the biggest unit doesn't win just for being big. 423 of", "membros já pontuaram este mês.": "members have scored this month.", "{a} está {d} pontos abaixo de {b}. Com {n} membros, cada ponto são cerca de {mm} por semana.": "{a} is {d} points below {b}. With {n} members, each point is about {mm} per week.", "1 membro": "1 member", "{n} membros": "{n} members", "Gerir membros": "Manage members", "Alterar prémio": "Change prize", "Editar desafio agendado": "Edit scheduled challenge", "Prémio da unidade vencedora: {p}": "Prize for the winning unit: {p}", "Próximo desafio: {n} · começa a {d} · {x} dias · {a} pts por ida, {b} pts por treino": "Next challenge: {n} · starts {d} · {x} days · {a} pts per visit, {b} pts per workout", "Enviar mensagem": "Send message", "Enviar": "Send", "Publicar": "Publish", "Cancelar": "Cancel", "Guardar": "Save", "Mensagem": "Message", "Demonstração: nada é guardado nem enviado a membros reais.": "Demo: nothing is stored or sent to real members.", "Para: {n} membros em risco · {u}": "To: {n} at-risk members · {u}", "Para: todos os membros das 4 unidades": "To: all members of the 4 units", "Olá! Sentimos a tua falta no Pro Gym. Esta semana tens treino marcado? Estamos à tua espera.": "Hi! We miss you at Pro Gym. Are you training this week? We're waiting for you.", "Aviso: o desafio de Dezembro começa em breve. Prepara-te!": "Notice: the December challenge starts soon. Get ready!", "Escreve uma mensagem.": "Write a message.", "Mensagem enviada a {n} membros": "Message sent to {n} members", "O prémio da unidade vencedora do desafio de Novembro.": "The prize for the winning unit of the November challenge.", "Prémio": "Prize", "Mensalidade grátis (1 mês)": "Free monthly fee (1 month)", "Pack de suplementos": "Supplement pack", "T-shirt Pro Gym": "Pro Gym T-shirt", "Outro (escrever)": "Other (write it)", "Descrição do prémio": "Prize description", "Escreve a descrição do prémio.": "Write the prize description.", "Prémio guardado": "Prize saved", "Os pontos contam pela média de cada unidade, para a unidade maior não ganhar só por ser maior.": "Points count by each unit's average, so the biggest unit doesn't win just for being big.", "Nome do desafio": "Challenge name", "Desafio de Dezembro": "December challenge", "Data de início": "Start date", "Duração": "Duration", "14 dias": "14 days", "21 dias": "21 days", "30 dias": "30 days", "Pontos por ida ao ginásio": "Points per gym visit", "Pontos por treino registado": "Points per logged workout", "Dá um nome ao desafio.": "Give the challenge a name.", "Escolhe uma data de início.": "Choose a start date.", "Indica pontos entre 1 e 10.": "Enter points between 1 and 10.", "Desafio agendado": "Challenge scheduled", "Atualiza o total de membros de cada unidade. Os indicadores do painel recalculam logo.": "Update each unit's total members. The dashboard figures recalculate instantly.", "Total: {n} membros": "Total: {n} members", "Usa números inteiros até 5000.": "Use whole numbers up to 5,000.", "{u}: o total não pode ser menor do que os {a} membros ativos.": "{u}: the total can't be lower than the {a} active members.", "Membros atualizados": "Members updated", "Lista exportada": "List exported", "dias": "days"};
   var KEY = 'yfx-clube-lang';
   var LANG = 'pt';
   var tstore = new WeakMap(), astore = new WeakMap(), hooks = [];
@@ -523,6 +602,7 @@ footer{font-size:12.5px;color:var(--muted);text-align:center;padding-block:6px 4
 
   function pinta(u){
     cur = u;
+    recompute();
     var d = dados[u];
     main.setAttribute('data-unit', u);
     $('k-ativos').textContent = d.ativos;
@@ -563,10 +643,168 @@ footer{font-size:12.5px;color:var(--muted);text-align:center;padding-block:6px 4
 
     // a mensagem passa a ser para o grupo filtrado: volta ao estado inicial
     paintBtns();
+    renderUnits();
+    renderChallenge();
 
     document.querySelector('#status > span').textContent = t('A mostrar:') + ' ' + t(nomes[u]);
     $('status-extra').textContent = u === 'todas' ? '' : t('. Horas, retenção e partilhas não têm dados por unidade e continuam a mostrar todas as unidades.');
   }
+
+
+  // ----- estado da demonstração (só em memória) -----
+  var UN = ['matola','mares','zimpeto','altomae'];
+  var PRIZES = {m:'Mensalidade grátis (1 mês)', s:'Pack de suplementos', t:'T-shirt Pro Gym'};
+  var state = {prize:null, next:null};
+  var toastT;
+  function toast(msg){
+    var el = $('toast'); el.hidden = false; el.textContent = '';
+    setTimeout(function(){ el.textContent = msg; }, 30);
+    clearTimeout(toastT); toastT = setTimeout(function(){ el.hidden = true; }, 3800);
+  }
+  function recompute(){
+    var sT = 0, sA = 0;
+    UN.forEach(function(u){ var d = dados[u]; d.pc = Math.round(d.ativos / d.total * 100); sT += d.total; sA += d.ativos; });
+    dados.todas.total = sT; dados.todas.ativos = sA; dados.todas.pc = Math.round(sA / sT * 100);
+  }
+  function renderUnits(){
+    var max = Math.max.apply(null, UN.map(function(u){ return dados[u].pc; }));
+    var min = Math.min.apply(null, UN.map(function(u){ return dados[u].pc; }));
+    document.querySelectorAll('#card-unid .brow[data-unit]').forEach(function(r){
+      var d = dados[r.getAttribute('data-unit')];
+      var f = r.querySelector('.bfill'); f.style.width = d.pc + '%'; f.classList.toggle('o', d.pc === max);
+      var v = r.querySelector('.bval'); v.textContent = d.pc + '%';
+      if (d.pc === max){ var sp = document.createElement('span'); sp.className = 'sr'; sp.textContent = ' ' + t('(mais alto)'); v.appendChild(sp); }
+    });
+    var hi = UN.filter(function(u){ return dados[u].pc === max; })[0];
+    var lo = UN.filter(function(u){ return dados[u].pc === min; })[0];
+    var note = $('unit-note');
+    if (hi === lo) { note.hidden = true; }
+    else {
+      note.hidden = false;
+      var n = dados[lo].total, m = Math.max(1, Math.round(n / 100));
+      note.textContent = t('{a} está {d} pontos abaixo de {b}. Com {n} membros, cada ponto são cerca de {mm} por semana.')
+        .replace('{a}', t(nomes[lo])).replace('{d}', max - min).replace('{b}', t(nomes[hi])).replace('{n}', n)
+        .replace('{mm}', m === 1 ? t('1 membro') : t('{n} membros').replace('{n}', m));
+    }
+    document.querySelectorAll('[data-total]').forEach(function(e){ e.textContent = dados.todas.total; });
+  }
+  function prizeText(){
+    if (!state.prize) return '';
+    return state.prize.k === 'o' ? state.prize.text : t(PRIZES[state.prize.k]);
+  }
+  function fmtDate(iso){
+    var d = new Date(iso + 'T12:00:00');
+    return d.toLocaleDateString(I.lang() === 'en' ? 'en-GB' : 'pt-PT', {day:'numeric', month:'short', year:'numeric'});
+  }
+  function renderChallenge(){
+    var pl = $('prize-line'), nl = $('next-line');
+    pl.hidden = !state.prize;
+    if (state.prize) pl.textContent = t('Prémio da unidade vencedora: {p}').replace('{p}', prizeText());
+    nl.hidden = !state.next;
+    if (state.next) {
+      var x = state.next;
+      nl.textContent = t('Próximo desafio: {n} · começa a {d} · {x} dias · {a} pts por ida, {b} pts por treino')
+        .replace('{n}', x.name).replace('{d}', fmtDate(x.date)).replace('{x}', x.dur).replace('{a}', x.pv).replace('{b}', x.pw);
+    }
+    $('btn-prize').textContent = state.prize ? t('Alterar prémio') : t('Definir prémio');
+    $('btn-next').textContent = state.next ? t('Editar desafio agendado') : t('Preparar desafio de Dezembro');
+  }
+
+  // ----- janelas -----
+  function openDlg(d, opener){ d._op = opener; if (d.showModal) d.showModal(); else d.setAttribute('open',''); }
+  document.querySelectorAll('dialog').forEach(function(d){
+    d.addEventListener('close', function(){ if (d._op && d._op.focus) d._op.focus(); });
+    d.addEventListener('click', function(e){ if (e.target === d) d.close(); });
+    d.querySelectorAll('[data-close]').forEach(function(b){ b.addEventListener('click', function(){ d.close(); }); });
+  });
+  function preventSubmit(id, fn){ $(id).addEventListener('submit', function(e){ e.preventDefault(); fn(); }); }
+  var mode = 'msg';
+  function openMsg(m, opener){
+    mode = m; var d = dados[cur]; $('dm-err').textContent = '';
+    $('dm-title').textContent = t(m === 'msg' ? 'Enviar mensagem' : 'Publicar aviso');
+    $('dm-send').textContent = t(m === 'msg' ? 'Enviar' : 'Publicar');
+    $('dm-to').textContent = m === 'msg'
+      ? t('Para: {n} membros em risco · {u}').replace('{n}', d.risco).replace('{u}', t(nomes[cur]))
+      : t('Para: todos os membros das 4 unidades');
+    $('dm-text').value = t(m === 'msg'
+      ? 'Olá! Sentimos a tua falta no Pro Gym. Esta semana tens treino marcado? Estamos à tua espera.'
+      : 'Aviso: o desafio de Dezembro começa em breve. Prepara-te!');
+    openDlg($('dlg-msg'), opener);
+  }
+  $('btn-msg').addEventListener('click', function(e){ openMsg('msg', e.currentTarget); });
+  $('btn-aviso').addEventListener('click', function(e){ openMsg('aviso', e.currentTarget); });
+  preventSubmit('f-msg', function(){
+    if (!$('dm-text').value.trim()){ $('dm-err').textContent = t('Escreve uma mensagem.'); return; }
+    if (mode === 'msg'){ sent.msg = true; toast(t('Mensagem enviada a {n} membros').replace('{n}', dados[cur].risco)); }
+    else { sent.aviso = true; toast(t('Aviso publicado nas 4 unidades')); }
+    paintBtns(); $('dlg-msg').close();
+  });
+
+  $('btn-prize').addEventListener('click', function(e){
+    var k = state.prize ? state.prize.k : 'm';
+    $('pr-sel').value = k; $('pr-txt').value = state.prize && k === 'o' ? state.prize.text : '';
+    $('pr-txt-w').hidden = (k !== 'o'); $('dp-err').textContent = '';
+    openDlg($('dlg-prize'), e.currentTarget);
+  });
+  $('pr-sel').addEventListener('change', function(){ $('pr-txt-w').hidden = ($('pr-sel').value !== 'o'); });
+  preventSubmit('f-prize', function(){
+    var k = $('pr-sel').value, tx = $('pr-txt').value.trim();
+    if (k === 'o' && !tx){ $('dp-err').textContent = t('Escreve a descrição do prémio.'); return; }
+    state.prize = {k:k, text:tx}; renderChallenge(); toast(t('Prémio guardado')); $('dlg-prize').close();
+  });
+
+  $('btn-next').addEventListener('click', function(e){
+    var x = state.next; $('dn-err').textContent = '';
+    $('nx-name').value = x ? x.name : t('Desafio de Dezembro');
+    $('nx-date').value = x ? x.date : '2026-12-01'; $('nx-dur').value = x ? x.dur : '30';
+    $('nx-pv').value = x ? x.pv : 3; $('nx-pw').value = x ? x.pw : 2;
+    openDlg($('dlg-next'), e.currentTarget);
+  });
+  preventSubmit('f-next', function(){
+    var name = $('nx-name').value.trim(), date = $('nx-date').value, pv = parseInt($('nx-pv').value,10), pw = parseInt($('nx-pw').value,10);
+    var err = '';
+    if (!name) err = t('Dá um nome ao desafio.');
+    else if (!date || isNaN(new Date(date + 'T12:00:00'))) err = t('Escolhe uma data de início.');
+    else if (!(pv >= 1 && pv <= 10 && pw >= 1 && pw <= 10)) err = t('Indica pontos entre 1 e 10.');
+    if (err){ $('dn-err').textContent = err; return; }
+    state.next = {name:name, date:date, dur:$('nx-dur').value, pv:pv, pw:pw};
+    renderChallenge(); toast(t('Desafio agendado')); $('dlg-next').close();
+  });
+
+  function memSum(){
+    var sum = 0; UN.forEach(function(u){ sum += parseInt($('mb-' + u).value, 10) || 0; });
+    $('mb-sum').textContent = t('Total: {n} membros').replace('{n}', t(String(sum)));
+  }
+  $('btn-members').addEventListener('click', function(e){
+    UN.forEach(function(u){ $('mb-' + u).value = dados[u].total; }); $('dg-err').textContent = ''; memSum();
+    openDlg($('dlg-mem'), e.currentTarget);
+  });
+  UN.forEach(function(u){ $('mb-' + u).addEventListener('input', memSum); });
+  preventSubmit('f-mem', function(){
+    var vals = {}, err = '';
+    UN.forEach(function(u){
+      var raw = $('mb-' + u).value, v = parseInt(raw, 10);
+      if (!err && (isNaN(v) || v < 0 || v > 5000 || String(v) !== String(raw).trim())) err = t('Usa números inteiros até 5000.');
+      else if (!err && v < dados[u].ativos) err = t('{u}: o total não pode ser menor do que os {a} membros ativos.').replace('{u}', t(nomes[u])).replace('{a}', dados[u].ativos);
+      vals[u] = v;
+    });
+    if (err){ $('dg-err').textContent = err; return; }
+    UN.forEach(function(u){ dados[u].total = vals[u]; });
+    recompute(); pinta(cur); toast(t('Membros atualizados')); $('dlg-mem').close();
+  });
+
+  // exportar a lista (CSV) do filtro atual
+  $('btn-export').addEventListener('click', function(){
+    var lista = (cur === 'todas') ? risco : risco.filter(function(r){ return r.u === cur; });
+    var rows = [[t('Membro'), t('Unidade'), t('Ausência') + ' (' + t('dias') + ')', t('Plano'), t('Mensalidade') + ' (MT)']];
+    lista.forEach(function(r){ rows.push([r.n, t(nomes[r.u]), r.d, t(r.p), r.v.replace('.','')]); });
+    var csv = '﻿' + rows.map(function(r){ return r.map(function(c){ return '"' + String(c).replace(/"/g,'""') + '"'; }).join(';'); }).join('\r\n');
+    try {
+      var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], {type:'text/csv;charset=utf-8'}));
+      a.download = 'pro-gym-membros-em-risco.csv'; document.body.appendChild(a); a.click(); a.remove();
+    } catch(e){}
+    toast(t('Lista exportada'));
+  });
 
   var fbtns = document.querySelectorAll('#filters button');
   fbtns.forEach(function(b){
@@ -577,14 +815,6 @@ footer{font-size:12.5px;color:var(--muted);text-align:center;padding-block:6px 4
     });
   });
 
-  var bm = $('btn-msg');
-  bm.addEventListener('click', function(){
-    sent.msg = true; paintBtns();
-  });
-  var ba = $('btn-aviso');
-  ba.addEventListener('click', function(){
-    sent.aviso = true; paintBtns();
-  });
 
   document.querySelectorAll('[aria-disabled="true"]').forEach(function(b){
     b.addEventListener('click', function(e){ e.preventDefault(); });
