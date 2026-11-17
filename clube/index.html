@@ -114,6 +114,27 @@ h3{font-size:14px;font-weight:700}
 .note{font-size:12.5px;color:var(--muted);margin:14px 0 0;line-height:1.45}
 .note.tight{margin:2px 0 0}
 
+
+/* ---- passos ---- */
+.steps{display:grid;grid-template-columns:112px minmax(0,1fr);gap:16px;align-items:center;margin-top:12px}
+.ring{position:relative;width:112px;height:112px}
+.ring svg{width:112px;height:112px;transform:rotate(-90deg)}
+.ring circle{fill:none;stroke-width:10}
+.ring .bg{stroke:var(--surface-2)}
+.ring .fg{stroke:var(--orange);stroke-linecap:round;transition:stroke-dashoffset .4s ease}
+.ring .mid{position:absolute;inset:0;display:grid;place-content:center;text-align:center}
+.ring .mid b{font-family:var(--display);font-size:20px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.1}
+.ring .mid span{font-size:11px;color:var(--muted)}
+.steps-info p{margin:0 0 4px;font-size:13.5px;line-height:1.4}
+.steps-info .goal{color:var(--muted);font-size:12.5px}
+.steps-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.steps-actions .btn{margin-top:0;min-height:44px;font-size:14px}
+.fact{margin-top:14px;padding:12px 13px;background:var(--surface-2);border-radius:10px;border-left:3px solid var(--orange)}
+.fact p{margin:0;font-size:13.5px;line-height:1.5}
+.fact .eyebrow{margin-bottom:5px}
+.fact button{margin-top:8px;min-height:44px;background:transparent;border:0;color:var(--orange);font-weight:600;font-size:13px;padding:0;cursor:pointer;font-family:inherit}
+@media (max-width:360px){.steps{grid-template-columns:1fr;justify-items:center;text-align:center}}
+
 /* ---- semana ---- */
 .week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;margin-top:12px}
 .day{text-align:center;padding:9px 0 8px;border-radius:9px;background:var(--surface-2);border:1px solid transparent}
@@ -396,6 +417,30 @@ h3{font-size:14px;font-weight:700}
       </div>
       <button class="btn ghost" type="button" data-go="treino">Abrir o treino</button>
     </div>
+
+    <div class="card" id="steps-card">
+      <p class="eyebrow">Passos de hoje</p>
+      <div class="steps">
+        <div class="ring" role="progressbar" aria-label="Progresso da meta de passos" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="stRing">
+          <svg viewBox="0 0 112 112" aria-hidden="true"><circle class="bg" cx="56" cy="56" r="49"/><circle class="fg" id="stArc" cx="56" cy="56" r="49" stroke-dasharray="307.9" stroke-dashoffset="307.9"/></svg>
+          <div class="mid"><b id="stN">0</b><span>passos</span></div>
+        </div>
+        <div class="steps-info">
+          <p id="stLeft"></p>
+          <p class="goal" id="stGoal"></p>
+        </div>
+      </div>
+      <div class="steps-actions">
+        <button class="btn" type="button" id="stAdd">+1.000 passos</button>
+        <button class="btn ghost" type="button" id="stSet" aria-describedby="stGoal">Mudar meta</button>
+      </div>
+      <div class="fact">
+        <p class="eyebrow">Curiosidade do dia</p>
+        <p id="stFact"></p>
+        <button type="button" id="stNext">Outra curiosidade</button>
+      </div>
+      <p class="note">Registo manual na demonstração. Ler os passos do telemóvel automaticamente exige a app nativa (fase seguinte).</p>
+    </div>
   </section>
 
   <!-- ===== TREINO ===== -->
@@ -610,7 +655,7 @@ h3{font-size:14px;font-weight:700}
 /* i18n: PT (origem) <-> EN. Dicionário indexado pelo texto em português. */
 (function(){
   'use strict';
-  var DICT = {"Saltar para o conteúdo": "Skip to content", "Unidade:": "Unit:", "Painel": "Admin", "Demonstração · dados de exemplo": "Demo · sample data", "Início": "Home", "Treino": "Workout", "Ranking": "Ranking", "Grupo": "Group", "Perfil": "Profile", "Desafio das unidades": "Unit challenge", "Novembro": "November", "dias": "days", "Posição": "Position", "pontos": "points", "· a tua": "· yours", "Pontos por média de cada membro, não por total — assim a unidade maior não ganha só por ser maior. Cada ida vale 3 pontos, cada treino registado vale 2.": "Points are based on each member's average, not the total, so the biggest unit doesn't win just for being big. Each gym visit is worth 3 points and each logged workout 2.", "A tua semana": "Your week", "de 4 idas": "of 4 visits", "dias seguidos": "day streak", "Seg": "Mon", "Ter": "Tue", "Qua": "Wed", "Qui": "Thu", "Sex": "Fri", "Sáb": "Sat", "Dom": "Sun", "feito": "done", "sem ida": "no visit", "hoje, por fazer": "today, still to do", "hoje, feito": "today, done", "por vir": "upcoming", "Modo Gulera": "Gulera Mode", "ativo": "active", "Tolerância da semana:": "This week's allowance:", "1 de 2 faltas": "1 of 2 missed days", "usadas": "used", "Podes faltar até 2 dias por semana sem perder a sequência. À terceira falta, o Modo Gulera desliga. Liga a partir de 7 dias seguidos.": "You can miss up to 2 days a week without losing your streak. On the third miss, Gulera Mode switches off. It switches on from a 7-day streak.", "Fazer check-in na Matola": "Check in at Matola", "Hoje": "Today", "Peito e Tríceps": "Chest and Triceps", "exercícios": "exercises", "séries": "sets", "minutos": "minutes", "Abrir o treino": "Open workout", "Sexta-feira": "Friday", "Supino reto com barra": "Barbell bench press", "última: 62,5 kg": "last: 62.5 kg", "4ª série": "4th set", "Recorde pessoal": "Personal record", "Supino inclinado com halteres": "Incline dumbbell press", "última: 24 kg": "last: 24 kg", "Crucifixo na máquina": "Machine fly", "última: 45 kg": "last: 45 kg", "Tríceps no pulley": "Cable triceps pushdown", "última: 32,5 kg": "last: 32.5 kg", "Tríceps francês": "Overhead triceps extension", "última: 20 kg": "last: 20 kg", "Terminar treino": "Finish workout", "Plano montado pelo teu instrutor na Matola. As cargas da última sessão aparecem sempre ao lado.": "Plan set up by your instructor at Matola. Weights from your last session always appear alongside.", "Os meus amigos": "My friends", "Marés · 19 dias seguidos": "Marés · 19-day streak", "Matola · 9 dias seguidos": "Matola · 9-day streak", "Alto Maé · 14 dias seguidos": "Alto Maé · 14-day streak", "Matola · 4 dias seguidos": "Matola · 4-day streak", "Zimpeto · parado há 6 dias": "Zimpeto · inactive for 6 days", "Tu": "You", "24 idas em Novembro": "24 visits in November", "22 idas em Novembro": "22 visits in November", "21 idas em Novembro": "21 visits in November", "17 idas em Novembro": "17 visits in November", "idas em Novembro": "visits in November", "Entre 596 membros, o ranking da unidade mostra os primeiros e a tua posição. O ranking dos amigos é o que faz as pessoas voltarem.": "Out of 596 members, the unit ranking shows the top ones and your position. The friends ranking is what brings people back.", "Os meus amigos do ginásio": "My gym friends", "hoje": "today", "Aula nova de": "New class:", "na Matola, às 18h30, de terça e quinta. Vagas limitadas, inscrição na receção.": "at Matola, 18:30, Tuesdays and Thursdays. Limited places, sign up at reception.", "há 20 min": "20 min ago", "Check-in no": "Check-in at", ". Sequência de 19 dias.": ". 19-day streak.", "Comentar": "Comment", "há 2 h": "2 h ago", "Novo recorde no agachamento:": "New squat record:", ". Finalmente passei os 100.": ". Finally got past 100.", "ontem": "yesterday", "Semana fechada:": "Week completed:", "4 de 4 idas": "4 of 4 visits", ". Alto Maé está a subir no desafio.": ". Alto Maé is climbing in the challenge.", "Alguém na Matola amanhã às 6h? Preciso de quem me puxe no supino.": "Anyone at Matola tomorrow at 6 am? I need someone to push me on bench.", "Membro da Matola desde Março · Membro Normal": "Matola member since March · Standard member", "Modo Gulera ativo": "Gulera Mode active", "idas este mês": "visits this month", "recordes": "records", "Idas por semana": "Visits per week", "Últimas 12 semanas": "Last 12 weeks", "Média subiu de 3,1 para 4,2 idas por semana desde que entraste no desafio.": "Average rose from 3.1 to 4.2 visits per week since you joined the challenge.", "Recordes pessoais": "Personal records", "Supino reto": "Bench press", "65 kg · hoje": "65 kg · today", "Agachamento": "Squat", "95 kg · há 9 dias": "95 kg · 9 days ago", "Peso morto": "Deadlift", "120 kg · há 3 semanas": "120 kg · 3 weeks ago", "Acesso da direção": "Management access", "Painel Pro Gym": "Pro Gym Dashboard", "O que a direção vê, nas quatro unidades. O sistema de cartão diz quem entrou. Isto diz quem está a ir embora.": "What management sees, across all four units. The card system tells you who walked in. This tells you who is leaving.", "membros sem aparecer há mais de 14 dias. No mês passado, 29 destes cancelaram.": "members haven't shown up in over 14 days. Last month, 29 of these cancelled.", "Enviar mensagem aos 38": "Message all 38", "Ver lista por unidade": "View list by unit", "Esta semana": "This week", "membros ativos": "active members", "membros totais": "total members", "no desafio": "in the challenge", "idas por membro": "visits per member", "Desafio de Novembro": "November challenge", "Marés lidera por 1,3 pontos": "Marés leads by 1.3 points", "Faltam 14 dias. 423 dos 596 membros participaram pelo menos uma vez. Partilhas no Instagram com a marca Pro Gym: 87 este mês.": "14 days left. 423 of 596 members have taken part at least once. Instagram shares with the Pro Gym brand: 87 this month.", "Publicar aviso a todas as unidades": "Post a notice to all units", "Secções da aplicação": "App sections", "Dias da semana": "Days of the week", "Escolher ranking": "Choose ranking", "Fogo, 4": "Fire, 4", "Força, 2": "Strength, 2", "Fogo, 9": "Fire, 9", "Palmas, 6": "Clap, 6", "Força, 7": "Strength, 7", "Eu vou, 3": "I'm in, 3", "Gráfico de barras das idas por semana nas últimas 12 semanas. As quatro últimas semanas, destacadas a cor de laranja, estão entre as mais altas.": "Bar chart of visits per week over the last 12 weeks. The last four weeks, highlighted in orange, are among the highest.", "Séries": "Sets", "Check-in feito · {n} dias seguidos": "Checked in · {n}-day streak", "Check-in feito. {n} dias seguidos.": "Checked in. {n}-day streak.", "Treino guardado · +2 pontos para a Matola": "Workout saved · +2 points for Matola", "Treino guardado. Mais 2 pontos para a Matola.": "Workout saved. 2 more points for Matola.", "Mensagem enviada a 38 membros": "Message sent to 38 members", "Mensagem enviada a 38 membros.": "Message sent to 38 members.", "Início · Pro Gym Clube": "Home", "@desc": "Demo of the Pro Gym Club member app. Sample data."};
+  var DICT = {"Saltar para o conteúdo": "Skip to content", "Unidade:": "Unit:", "Painel": "Admin", "Demonstração · dados de exemplo": "Demo · sample data", "Início": "Home", "Treino": "Workout", "Ranking": "Ranking", "Grupo": "Group", "Perfil": "Profile", "Desafio das unidades": "Unit challenge", "Novembro": "November", "dias": "days", "Posição": "Position", "pontos": "points", "· a tua": "· yours", "Pontos por média de cada membro, não por total — assim a unidade maior não ganha só por ser maior. Cada ida vale 3 pontos, cada treino registado vale 2.": "Points are based on each member's average, not the total, so the biggest unit doesn't win just for being big. Each gym visit is worth 3 points and each logged workout 2.", "A tua semana": "Your week", "de 4 idas": "of 4 visits", "dias seguidos": "day streak", "Seg": "Mon", "Ter": "Tue", "Qua": "Wed", "Qui": "Thu", "Sex": "Fri", "Sáb": "Sat", "Dom": "Sun", "feito": "done", "sem ida": "no visit", "hoje, por fazer": "today, still to do", "hoje, feito": "today, done", "por vir": "upcoming", "Modo Gulera": "Gulera Mode", "ativo": "active", "Tolerância da semana:": "This week's allowance:", "1 de 2 faltas": "1 of 2 missed days", "usadas": "used", "Podes faltar até 2 dias por semana sem perder a sequência. À terceira falta, o Modo Gulera desliga. Liga a partir de 7 dias seguidos.": "You can miss up to 2 days a week without losing your streak. On the third miss, Gulera Mode switches off. It switches on from a 7-day streak.", "Fazer check-in na Matola": "Check in at Matola", "Hoje": "Today", "Peito e Tríceps": "Chest and Triceps", "exercícios": "exercises", "séries": "sets", "minutos": "minutes", "Abrir o treino": "Open workout", "Sexta-feira": "Friday", "Supino reto com barra": "Barbell bench press", "última: 62,5 kg": "last: 62.5 kg", "4ª série": "4th set", "Recorde pessoal": "Personal record", "Supino inclinado com halteres": "Incline dumbbell press", "última: 24 kg": "last: 24 kg", "Crucifixo na máquina": "Machine fly", "última: 45 kg": "last: 45 kg", "Tríceps no pulley": "Cable triceps pushdown", "última: 32,5 kg": "last: 32.5 kg", "Tríceps francês": "Overhead triceps extension", "última: 20 kg": "last: 20 kg", "Terminar treino": "Finish workout", "Plano montado pelo teu instrutor na Matola. As cargas da última sessão aparecem sempre ao lado.": "Plan set up by your instructor at Matola. Weights from your last session always appear alongside.", "Os meus amigos": "My friends", "Marés · 19 dias seguidos": "Marés · 19-day streak", "Matola · 9 dias seguidos": "Matola · 9-day streak", "Alto Maé · 14 dias seguidos": "Alto Maé · 14-day streak", "Matola · 4 dias seguidos": "Matola · 4-day streak", "Zimpeto · parado há 6 dias": "Zimpeto · inactive for 6 days", "Tu": "You", "24 idas em Novembro": "24 visits in November", "22 idas em Novembro": "22 visits in November", "21 idas em Novembro": "21 visits in November", "17 idas em Novembro": "17 visits in November", "idas em Novembro": "visits in November", "Entre 596 membros, o ranking da unidade mostra os primeiros e a tua posição. O ranking dos amigos é o que faz as pessoas voltarem.": "Out of 596 members, the unit ranking shows the top ones and your position. The friends ranking is what brings people back.", "Os meus amigos do ginásio": "My gym friends", "hoje": "today", "Aula nova de": "New class:", "na Matola, às 18h30, de terça e quinta. Vagas limitadas, inscrição na receção.": "at Matola, 18:30, Tuesdays and Thursdays. Limited places, sign up at reception.", "há 20 min": "20 min ago", "Check-in no": "Check-in at", ". Sequência de 19 dias.": ". 19-day streak.", "Comentar": "Comment", "há 2 h": "2 h ago", "Novo recorde no agachamento:": "New squat record:", ". Finalmente passei os 100.": ". Finally got past 100.", "ontem": "yesterday", "Semana fechada:": "Week completed:", "4 de 4 idas": "4 of 4 visits", ". Alto Maé está a subir no desafio.": ". Alto Maé is climbing in the challenge.", "Alguém na Matola amanhã às 6h? Preciso de quem me puxe no supino.": "Anyone at Matola tomorrow at 6 am? I need someone to push me on bench.", "Membro da Matola desde Março · Membro Normal": "Matola member since March · Standard member", "Modo Gulera ativo": "Gulera Mode active", "idas este mês": "visits this month", "recordes": "records", "Idas por semana": "Visits per week", "Últimas 12 semanas": "Last 12 weeks", "Média subiu de 3,1 para 4,2 idas por semana desde que entraste no desafio.": "Average rose from 3.1 to 4.2 visits per week since you joined the challenge.", "Recordes pessoais": "Personal records", "Supino reto": "Bench press", "65 kg · hoje": "65 kg · today", "Agachamento": "Squat", "95 kg · há 9 dias": "95 kg · 9 days ago", "Peso morto": "Deadlift", "120 kg · há 3 semanas": "120 kg · 3 weeks ago", "Acesso da direção": "Management access", "Painel Pro Gym": "Pro Gym Dashboard", "O que a direção vê, nas quatro unidades. O sistema de cartão diz quem entrou. Isto diz quem está a ir embora.": "What management sees, across all four units. The card system tells you who walked in. This tells you who is leaving.", "membros sem aparecer há mais de 14 dias. No mês passado, 29 destes cancelaram.": "members haven't shown up in over 14 days. Last month, 29 of these cancelled.", "Enviar mensagem aos 38": "Message all 38", "Ver lista por unidade": "View list by unit", "Esta semana": "This week", "membros ativos": "active members", "membros totais": "total members", "no desafio": "in the challenge", "idas por membro": "visits per member", "Desafio de Novembro": "November challenge", "Marés lidera por 1,3 pontos": "Marés leads by 1.3 points", "Faltam 14 dias. 423 dos 596 membros participaram pelo menos uma vez. Partilhas no Instagram com a marca Pro Gym: 87 este mês.": "14 days left. 423 of 596 members have taken part at least once. Instagram shares with the Pro Gym brand: 87 this month.", "Publicar aviso a todas as unidades": "Post a notice to all units", "Secções da aplicação": "App sections", "Dias da semana": "Days of the week", "Escolher ranking": "Choose ranking", "Fogo, 4": "Fire, 4", "Força, 2": "Strength, 2", "Fogo, 9": "Fire, 9", "Palmas, 6": "Clap, 6", "Força, 7": "Strength, 7", "Eu vou, 3": "I'm in, 3", "Gráfico de barras das idas por semana nas últimas 12 semanas. As quatro últimas semanas, destacadas a cor de laranja, estão entre as mais altas.": "Bar chart of visits per week over the last 12 weeks. The last four weeks, highlighted in orange, are among the highest.", "Séries": "Sets", "Check-in feito · {n} dias seguidos": "Checked in · {n}-day streak", "Check-in feito. {n} dias seguidos.": "Checked in. {n}-day streak.", "Treino guardado · +2 pontos para a Matola": "Workout saved · +2 points for Matola", "Treino guardado. Mais 2 pontos para a Matola.": "Workout saved. 2 more points for Matola.", "Mensagem enviada a 38 membros": "Message sent to 38 members", "Mensagem enviada a 38 membros.": "Message sent to 38 members.", "Início · Pro Gym Clube": "Home", "@desc": "Demo of the Pro Gym Club member app. Sample data.", "Passos de hoje": "Today's steps", "passos": "steps", "+1.000 passos": "+1,000 steps", "Mudar meta": "Change goal", "Progresso da meta de passos": "Step goal progress", "Curiosidade do dia": "Fun fact of the day", "Outra curiosidade": "Another fun fact", "Registo manual na demonstração. Ler os passos do telemóvel automaticamente exige a app nativa (fase seguinte).": "Manual entry in the demo. Reading steps from the phone automatically needs the native app (next phase).", "Meta atingida! Bom trabalho.": "Goal reached! Great work.", "Faltam {n} passos para a meta.": "{n} steps to go to reach your goal.", "Meta diária:": "Daily goal:", "Os 10.000 passos por dia vieram de uma campanha japonesa de 1965 para um podómetro chamado \"manpo-kei\", que quer dizer \"medidor de 10.000 passos\".": "The 10,000-steps-a-day target comes from a 1965 Japanese campaign for a pedometer called \"manpo-kei\", meaning \"10,000-step meter\".", "Um passo mede em média entre 70 e 80 cm, por isso 10.000 passos dão perto de 7 a 8 km.": "One step averages 70 to 80 cm, so 10,000 steps come to roughly 7 to 8 km.", "Mil passos equivalem a cerca de 10 minutos de caminhada em ritmo normal.": "A thousand steps is about 10 minutes of walking at a normal pace.", "Andar a cerca de 100 passos por minuto já conta como esforço moderado para o coração.": "Walking at about 100 steps a minute already counts as moderate effort for the heart.", "Uma grande revisão científica de 2025 viu ganhos de saúde importantes já perto dos 7.000 passos por dia, sem ser preciso chegar aos 10.000.": "A large 2025 scientific review found major health gains at around 7,000 steps a day, without needing to reach 10,000."};
   var KEY = 'yfx-clube-lang';
   var LANG = 'pt';
   var tstore = new WeakMap(), astore = new WeakMap(), hooks = [];
@@ -792,10 +837,45 @@ h3{font-size:14px;font-weight:700}
     else { ci.textContent = orig.ci; }
     if (flags.ew) ew.textContent = t('Treino guardado · +2 pontos para a Matola'); else ew.textContent = orig.ew;
     if (flags.sm) sm.textContent = t('Mensagem enviada a 38 membros'); else sm.textContent = orig.sm;
+    renderSteps();
     setTitle();
   });
 
+
+  // ---- passos (demo: registo manual, só em memória) ----
+  var goals = [6000, 8000, 10000, 12000];
+  var steps = {n:4200, g:1, f:0};
+  var FACTS = [
+    'Os 10.000 passos por dia vieram de uma campanha japonesa de 1965 para um podómetro chamado "manpo-kei", que quer dizer "medidor de 10.000 passos".',
+    'Um passo mede em média entre 70 e 80 cm, por isso 10.000 passos dão perto de 7 a 8 km.',
+    'Mil passos equivalem a cerca de 10 minutos de caminhada em ritmo normal.',
+    'Andar a cerca de 100 passos por minuto já conta como esforço moderado para o coração.',
+    'Uma grande revisão científica de 2025 viu ganhos de saúde importantes já perto dos 7.000 passos por dia, sem ser preciso chegar aos 10.000.'
+  ];
+  function fmtN(n){ return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, document.documentElement.lang === 'en' ? ',' : '.'); }
+  function renderSteps(){
+    var goal = goals[steps.g], pct = Math.min(100, Math.round(steps.n / goal * 100));
+    document.getElementById('stN').textContent = fmtN(steps.n);
+    document.getElementById('stArc').setAttribute('stroke-dashoffset', (307.9 * (1 - pct / 100)).toFixed(1));
+    var ring = document.getElementById('stRing');
+    ring.setAttribute('aria-valuenow', pct);
+    ring.setAttribute('aria-valuetext', pct + '%');
+    document.getElementById('stLeft').textContent = steps.n >= goal ? t('Meta atingida! Bom trabalho.') : tf('Faltam {n} passos para a meta.', fmtN(goal - steps.n));
+    document.getElementById('stGoal').textContent = t('Meta diária:') + ' ' + fmtN(goal) + ' ' + t('passos') + ' · ' + pct + '%';
+    document.getElementById('stFact').textContent = t(FACTS[steps.f]);
+  }
+  document.getElementById('stAdd').addEventListener('click', function(){
+    var before = steps.n; steps.n = Math.min(60000, steps.n + 1000); renderSteps();
+    if (before < goals[steps.g] && steps.n >= goals[steps.g]) live.textContent = t('Meta atingida! Bom trabalho.');
+  });
+  document.getElementById('stSet').addEventListener('click', function(){
+    steps.g = (steps.g + 1) % goals.length; renderSteps();
+    live.textContent = t('Meta diária:') + ' ' + fmtN(goals[steps.g]) + ' ' + t('passos');
+  });
+  document.getElementById('stNext').addEventListener('click', function(){ steps.f = (steps.f + 1) % FACTS.length; renderSteps(); });
+
   bind();
+  renderSteps();
   I.init();
 
   if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)){
